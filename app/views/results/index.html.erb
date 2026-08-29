@@ -1,0 +1,113 @@
+<!-- app/views/results/index.html.erb -->
+<% if @race.nil? %>
+  <p class="text-text-tertiary text-[14px]">No completed races found.</p>
+<% else %>
+
+  <div class="flex flex-wrap items-center justify-between gap-4 mb-10">
+    <h1 class="font-display text-3xl font-semibold tracking-tight text-text-primary">Results</h1>
+
+    <div class="flex items-center gap-3">
+      <select onchange="window.location.href = this.value"
+              class="bg-bg-1 border border-line text-text-secondary text-[13px] rounded-md px-3 py-2 focus:outline-none">
+        <% @years.each do |y| %>
+          <option value="<%= results_path(year: y, view: @view) %>" <%= "selected" if y == @year %>><%= y %></option>
+        <% end %>
+      </select>
+
+      <select onchange="window.location.href = this.value"
+              class="bg-bg-1 border border-line text-text-secondary text-[13px] rounded-md px-3 py-2 focus:outline-none">
+        <% @season_races.each do |r| %>
+          <option value="<%= results_path(id: r.id, view: @view) %>" <%= "selected" if r.id == @race.id %>>
+            Round <%= r.round %> — <%= r.grand_prix.name %>
+          </option>
+        <% end %>
+      </select>
+    </div>
+  </div>
+
+  <div class="flex items-center gap-3 mb-2">
+    <span class="text-2xl leading-none"><%= flag_emoji(@race.circuit.country&.alpha2_code) %></span>
+    <h2 class="font-display text-2xl font-bold text-text-primary"><%= @race.circuit.country&.name || @race.grand_prix.name %></h2>
+  </div>
+  <p class="text-text-tertiary text-[12px] uppercase tracking-wide mb-1"><%= @race.official_name %></p>
+  <p class="text-text-secondary text-[13px] mb-8"><%= @race.date.strftime("%B %-d, %Y") %> · Round <%= @race.round %></p>
+
+  <div class="flex gap-6 border-b border-line mb-8">
+    <%= link_to "Race Result", results_path(id: @race.id, view: "result"),
+          class: "pb-3 text-[13px] font-medium border-b-2 #{@view == "result" ? "border-accent-red text-text-primary" : "border-transparent text-text-tertiary hover:text-text-secondary"} transition-colors duration-150" %>
+    <%= link_to "Qualifying", results_path(id: @race.id, view: "qualifying"),
+          class: "pb-3 text-[13px] font-medium border-b-2 #{@view == "qualifying" ? "border-accent-red text-text-primary" : "border-transparent text-text-tertiary hover:text-text-secondary"} transition-colors duration-150" %>
+  </div>
+
+  <% if @view == "result" %>
+    <div class="max-h-[36rem] overflow-y-auto scroll-thin pr-4">
+      <table class="w-full text-left">
+        <thead class="sticky top-0 bg-bg-0">
+          <tr class="text-text-tertiary text-[12px] uppercase tracking-wide border-b border-line">
+            <th class="py-3 pr-4 font-medium">Pos.</th>
+            <th class="py-3 pr-4 font-medium">Grid</th>
+            <th class="py-3 pr-4 font-medium"></th>
+            <th class="py-3 pr-4 font-medium">Driver</th>
+            <th class="py-3 pr-4 font-medium">Team</th>
+            <th class="py-3 pr-4 font-medium">Time</th>
+            <th class="py-3 pr-0 font-medium text-right">Points</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% @results.each do |r| %>
+            <% delta = (r.grid_position_number && r.position_number) ? (r.grid_position_number - r.position_number) : nil %>
+            <tr class="border-b border-line">
+              <td class="py-4 pr-4 text-text-primary font-bold text-[15px]"><%= r.position_text %></td>
+              <td class="py-4 pr-4 text-text-tertiary font-mono text-[13px]"><%= r.grid_position_number || "—" %></td>
+              <td class="py-4 pr-4 text-[13px] font-mono font-bold">
+                <% if delta.nil? %>
+                  <span class="text-text-tertiary">—</span>
+                <% elsif delta > 0 %>
+                  <span class="text-emerald-500">▲<%= delta %></span>
+                <% elsif delta < 0 %>
+                  <span class="text-accent-red">▼<%= delta.abs %></span>
+                <% else %>
+                  <span class="text-text-tertiary">—</span>
+                <% end %>
+              </td>
+              <td class="py-4 pr-4 text-text-primary font-bold text-[15px]"><%= r.driver.name %></td>
+              <td class="py-4 pr-4 text-text-secondary text-[13px]"><%= r.constructor.name %></td>
+              <td class="py-4 pr-4 text-text-primary font-bold font-mono text-[13px]">
+                <%= r.position_number == 1 ? r.time : r.gap %>
+              </td>
+              <td class="py-4 pr-0 text-text-primary font-bold font-mono text-[13px] text-right">
+                <%= number_with_precision(r.points, precision: 0) %>
+              </td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    </div>
+  <% else %>
+    <div class="max-h-[36rem] overflow-y-auto scroll-thin pr-4">
+      <table class="w-full text-left">
+        <thead class="sticky top-0 bg-bg-0">
+          <tr class="text-text-tertiary text-[12px] uppercase tracking-wide border-b border-line">
+            <th class="py-3 pr-4 font-medium">Pos.</th>
+            <th class="py-3 pr-4 font-medium">Driver</th>
+            <th class="py-3 pr-4 font-medium">Team</th>
+            <th class="py-3 pr-0 font-medium text-right">Time</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% @qualifying.each do |q| %>
+            <tr class="border-b border-line">
+              <td class="py-4 pr-4 text-text-primary font-bold text-[15px]"><%= q.position_text %></td>
+              <td class="py-4 pr-4 text-text-primary font-bold text-[15px]"><%= q.driver.name %></td>
+              <td class="py-4 pr-4 text-text-secondary text-[13px]"><%= q.constructor.name %></td>
+              <td class="py-4 pr-0 text-text-primary font-bold font-mono text-[13px] text-right">
+                <%= q.q3 || q.q2 || q.q1 %>
+              </td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    </div>
+  <% end %>
+
+<% end %>

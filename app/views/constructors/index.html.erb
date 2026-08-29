@@ -1,0 +1,59 @@
+<!-- app/views/constructors/index.html.erb -->
+<div class="flex flex-wrap items-center justify-between gap-4 mb-10">
+  <h1 class="font-display text-3xl font-semibold tracking-tight text-text-primary">Teams</h1>
+
+  <select onchange="window.location.href = this.value"
+          class="bg-bg-1 border border-line text-text-secondary text-[13px] rounded-md px-3 py-2 focus:outline-none">
+    <% @years.each do |y| %>
+      <option value="<%= constructors_season_path(year: y) %>" <%= "selected" if y == @year %>><%= y %></option>
+    <% end %>
+  </select>
+</div>
+
+<div class="max-h-[36rem] overflow-auto scroll-thin pr-3">
+  <table class="w-full text-left whitespace-nowrap">
+    <thead>
+      <tr class="text-text-tertiary text-[11px] uppercase tracking-wide border-b border-line sticky top-0 z-20">
+        <th class="py-3 pr-4 font-medium bg-bg-0"></th>
+        <th class="py-3 pr-4 font-medium text-center bg-bg-0 border-l border-line" colspan="4">Season Stats</th>
+        <th class="py-3 pr-0 font-medium text-center bg-bg-0 border-l border-line" colspan="6">Lifetime Stats</th>
+      </tr>
+      <tr class="text-text-tertiary text-[11px] uppercase tracking-wide border-b border-line sticky top-[37px] z-10">
+        <th class="py-3 pr-6 font-medium bg-bg-0">Name</th>
+        <th class="py-3 pr-4 font-medium text-right bg-bg-0 border-l border-line pl-4">Starts</th>
+        <th class="py-3 pr-4 font-medium text-right bg-bg-0">Wins</th>
+        <th class="py-3 pr-4 font-medium text-right bg-bg-0">Podiums</th>
+        <th class="py-3 pr-6 font-medium text-right bg-bg-0">Points</th>
+        <th class="py-3 pr-4 font-medium text-right bg-bg-0 border-l border-line pl-4">Points</th>
+        <th class="py-3 pr-4 font-medium text-right bg-bg-0">Wins</th>
+        <th class="py-3 pr-4 font-medium text-right bg-bg-0">Podiums</th>
+        <th class="py-3 pr-4 font-medium text-right bg-bg-0">1st &amp; 2nd Finishes</th>
+        <th class="py-3 pr-4 font-medium text-right bg-bg-0">Poles</th>
+        <th class="py-3 pr-0 font-medium text-right bg-bg-0">Race Laps</th>
+      </tr>
+    </thead>
+    <tbody>
+      <% @season_constructors.each do |sc| %>
+        <% c = sc.constructor %>
+        <tr class="border-b border-line">
+          <td class="py-4 pr-6">
+            <div class="text-text-primary font-bold text-[15px]"><%= c.name %></div>
+            <div class="text-text-tertiary text-[12px]">
+              <span class="mr-1"><%= flag_emoji(c.country&.alpha2_code) %></span><%= c.country&.name %>
+            </div>
+          </td>
+          <td class="py-4 pr-4 text-text-secondary font-mono text-[14px] text-right border-l border-line pl-4"><%= sc.total_race_starts %></td>
+          <td class="py-4 pr-4 text-text-secondary font-mono text-[14px] text-right"><%= sc.total_race_wins %></td>
+          <td class="py-4 pr-4 text-text-secondary font-mono text-[14px] text-right"><%= sc.total_podiums %></td>
+          <td class="py-4 pr-6 text-text-primary font-bold font-mono text-[14px] text-right"><%= number_with_precision(sc.total_points, precision: 1) %></td>
+          <td class="py-4 pr-4 text-text-primary font-bold font-mono text-[14px] text-right border-l border-line pl-4"><%= number_with_precision(c.total_points, precision: 1) %></td>
+          <td class="py-4 pr-4 text-text-secondary font-mono text-[14px] text-right"><%= c.total_race_wins %></td>
+          <td class="py-4 pr-4 text-text-secondary font-mono text-[14px] text-right"><%= c.total_podiums %></td>
+          <td class="py-4 pr-4 text-text-secondary font-mono text-[14px] text-right"><%= c.total_1_and_2_finishes %></td>
+          <td class="py-4 pr-4 text-text-secondary font-mono text-[14px] text-right"><%= c.total_pole_positions %></td>
+          <td class="py-4 pr-0 text-text-secondary font-mono text-[14px] text-right"><%= number_with_precision(c.total_race_laps, precision: 0, delimiter: ",") %></td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+</div>

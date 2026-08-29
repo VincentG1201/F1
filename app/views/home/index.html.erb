@@ -1,0 +1,85 @@
+<!-- app/views/home/index.html.erb -->
+<div class="space-y-20">
+
+  <% if @next_race %>
+    <div class="text-center pt-10 pb-4">
+      <p class="text-accent-red text-[13px] font-medium tracking-wide mb-3">Next Race: Round <%= @next_race.round %></p>
+      <h1 class="font-display text-5xl font-semibold tracking-tight text-text-primary mb-3">
+        <span class="mr-2"><%= flag_emoji(@next_race.circuit.country&.alpha2_code) %></span><%= @next_race.grand_prix.name %>
+      </h1>
+      <p class="text-text-primary text-[12px] uppercase tracking-wide font-bold mb-3"><%= @next_race.official_name %></p>
+      <p class="text-text-secondary text-[15px]"><%= @next_race.date.strftime("%B %-d, %Y") %></p>
+    </div>
+  <% end %>
+
+  <%= render "layouts/sector_strip" %>
+
+  <div class="grid grid-cols-1 lg:grid-cols-3 gap-16">
+
+    <section>
+      <div class="flex items-center justify-between mb-5">
+        <h2 class="text-[13px] font-medium text-text-tertiary uppercase tracking-wide">Schedule</h2>
+        <%= link_to "Full schedule →", schedule_path, class: "text-[13px] text-accent-red hover:opacity-70 transition-opacity" %>
+      </div>
+      <div class="max-h-96 overflow-y-auto scroll-thin pr-3">
+        <% @schedule.each do |race| %>
+          <% done = race.date < Date.current %>
+          <div class="flex items-center justify-between py-3 border-b border-line">
+            <div class="flex items-center gap-4">
+              <span class="text-text-tertiary text-[13px] font-mono w-5"><%= race.round %></span>
+              <span class="text-[15px] <%= done ? 'text-text-tertiary' : 'text-text-primary' %>">
+                <%= race.grand_prix.name %>
+              </span>
+            </div>
+            <span class="text-text-tertiary text-[13px] font-mono"><%= race.date.strftime("%b %-d") %></span>
+          </div>
+        <% end %>
+      </div>
+    </section>
+
+    <section>
+      <div class="flex items-center justify-between mb-5">
+        <h2 class="text-[13px] font-medium text-text-tertiary uppercase tracking-wide">Driver Standings</h2>
+        <%= link_to "Full standings →", standings_path, class: "text-[13px] text-accent-red hover:opacity-70 transition-opacity" %>
+      </div>
+      <% if @driver_standings.present? %>
+        <div class="max-h-96 overflow-y-auto scroll-thin pr-3">
+          <% @driver_standings.each do |s| %>
+            <div class="flex items-center justify-between py-3 border-b border-line">
+              <div class="flex items-center gap-4">
+                <span class="text-text-tertiary text-[13px] font-mono w-5"><%= s.position_number %></span>
+                <span class="text-[15px] text-text-primary"><%= s.driver.name %></span>
+              </div>
+              <span class="text-text-secondary text-[13px] font-mono"><%= number_with_precision(s.points, precision: 0) %></span>
+            </div>
+          <% end %>
+        </div>
+      <% else %>
+        <p class="text-text-tertiary text-[14px]">Standings will appear after the first race.</p>
+      <% end %>
+    </section>
+
+    <section>
+      <div class="flex items-center justify-between mb-5">
+        <h2 class="text-[13px] font-medium text-text-tertiary uppercase tracking-wide">Constructor Standings</h2>
+        <%= link_to "Full standings →", standings_path, class: "text-[13px] text-accent-red hover:opacity-70 transition-opacity" %>
+      </div>
+      <% if @constructor_standings.present? %>
+        <div class="max-h-96 overflow-y-auto scroll-thin pr-3">
+          <% @constructor_standings.each do |s| %>
+            <div class="flex items-center justify-between py-3 border-b border-line">
+              <div class="flex items-center gap-4">
+                <span class="text-text-tertiary text-[13px] font-mono w-5"><%= s.position_number %></span>
+                <span class="text-[15px] text-text-primary"><%= s.constructor.name %></span>
+              </div>
+              <span class="text-text-secondary text-[13px] font-mono"><%= number_with_precision(s.points, precision: 0) %></span>
+            </div>
+          <% end %>
+        </div>
+      <% else %>
+        <p class="text-text-tertiary text-[14px]">Standings will appear after the first race.</p>
+      <% end %>
+    </section>
+
+  </div>
+</div>

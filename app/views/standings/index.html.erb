@@ -1,0 +1,70 @@
+<div class="flex flex-wrap items-center justify-between gap-4 mb-10">
+  <h1 class="font-display text-3xl font-semibold tracking-tight text-text-primary">Standings</h1>
+
+  <select onchange="window.location.href = this.value"
+          class="bg-bg-1 border border-line text-text-secondary text-[13px] rounded-md px-3 py-2 focus:outline-none">
+    <% @years.each do |y| %>
+      <option value="<%= standings_path(type: @type, year: y) %>" <%= "selected" if y == @year %>><%= y %></option>
+    <% end %>
+  </select>
+</div>
+
+<div class="flex gap-6 border-b border-line mb-8">
+  <%= link_to "Drivers", standings_path(type: "drivers", year: @year),
+        class: "pb-3 text-[13px] font-medium border-b-2 #{@type == "drivers" ? "border-accent-red text-text-primary" : "border-transparent text-text-tertiary hover:text-text-secondary"} transition-colors duration-150" %>
+  <%= link_to "Teams", standings_path(type: "teams", year: @year),
+        class: "pb-3 text-[13px] font-medium border-b-2 #{@type == "teams" ? "border-accent-red text-text-primary" : "border-transparent text-text-tertiary hover:text-text-secondary"} transition-colors duration-150" %>
+</div>
+
+<% if @standings.blank? %>
+  <p class="text-text-tertiary text-[14px]">No standings available for this season yet.</p>
+<% elsif @type == "drivers" %>
+  <table class="w-full text-left">
+    <thead>
+      <tr class="text-text-tertiary text-[12px] uppercase tracking-wide border-b border-line">
+        <th class="py-3 pr-4 font-medium">Pos.</th>
+        <th class="py-3 pr-4 font-medium">Driver</th>
+        <th class="py-3 pr-4 font-medium">Nationality</th>
+        <th class="py-3 pr-4 font-medium">Team</th>
+        <th class="py-3 pr-0 font-medium text-right">Points</th>
+      </tr>
+    </thead>
+    <tbody>
+      <% @standings.each do |s| %>
+        <tr class="border-b border-line">
+          <td class="py-4 pr-4 text-text-primary font-bold text-[15px]"><%= s.position_number %></td>
+          <td class="py-4 pr-4 text-text-primary font-bold text-[15px]"><%= s.driver.name %></td>
+          <td class="py-4 pr-4 text-text-secondary text-[13px]">
+            <span class="mr-1"><%= flag_emoji(s.driver.nationality_country&.alpha2_code) %></span>
+            <%= s.driver.nationality_country&.name %>
+          </td>
+          <td class="py-4 pr-4 text-text-secondary text-[13px]"><%= @current_teams[s.driver_id]&.name %></td>
+          <td class="py-4 pr-0 text-text-primary font-bold font-mono text-[13px] text-right">
+            <%= number_with_precision(s.points, precision: 0) %>
+          </td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+<% else %>
+  <table class="w-full text-left">
+    <thead>
+      <tr class="text-text-tertiary text-[12px] uppercase tracking-wide border-b border-line">
+        <th class="py-3 pr-4 font-medium">Pos.</th>
+        <th class="py-3 pr-4 font-medium">Team</th>
+        <th class="py-3 pr-0 font-medium text-right">Points</th>
+      </tr>
+    </thead>
+    <tbody>
+      <% @standings.each do |s| %>
+        <tr class="border-b border-line">
+          <td class="py-4 pr-4 text-text-primary font-bold text-[15px]"><%= s.position_number %></td>
+          <td class="py-4 pr-4 text-text-primary font-bold text-[15px]"><%= s.constructor.name %></td>
+          <td class="py-4 pr-0 text-text-primary font-bold font-mono text-[13px] text-right">
+            <%= number_with_precision(s.points, precision: 0) %>
+          </td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+<% end %>

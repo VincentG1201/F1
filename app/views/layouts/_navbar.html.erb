@@ -1,0 +1,20 @@
+<!-- app/views/layouts/_navbar.html.erb -->
+<nav class="sticky top-0 z-50 backdrop-blur-md bg-bg-0/70 border-b border-line">
+  <div class="max-w-6xl mx-auto px-6 flex items-center gap-10 h-14">
+    <%= link_to root_path, class: "font-display text-[15px] font-semibold tracking-tight text-text-primary" do %>
+      Minmin's F1
+    <% end %>
+    <div class="flex gap-8 text-[13px]">
+      <%= link_to "Schedule", schedule_path,
+            class: "transition-colors duration-150 #{request.path.start_with?('/schedule') ? 'text-text-primary font-medium' : 'text-text-secondary hover:text-text-primary'}" %>
+      <%= link_to "Results", results_path,
+            class: "transition-colors duration-150 #{request.path.start_with?('/result') ? 'text-text-primary font-medium' : 'text-text-secondary hover:text-text-primary'}" %>
+      <%= link_to "Standings", standings_path,
+            class: "transition-colors duration-150 #{request.path.start_with?('/standings') ? 'text-text-primary font-medium' : 'text-text-secondary hover:text-text-primary'}" %>
+      <%= link_to "Drivers", drivers_path,
+            class: "transition-colors duration-150 #{request.path.start_with?('/drivers') ? 'text-text-primary font-medium' : 'text-text-secondary hover:text-text-primary'}" %>
+      <%= link_to "Teams", constructors_path,
+            class: "transition-colors duration-150 #{request.path.start_with?('/teams') ? 'text-text-primary font-medium' : 'text-text-secondary hover:text-text-primary'}" %>
+    </div>
+  </div>
+</nav>
